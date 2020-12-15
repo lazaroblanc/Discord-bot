@@ -43,17 +43,19 @@ for (let signal of signals) {
 }
 
 // Rotating activity messages
-let activityChangeIntervalMins = 10;
-client.setInterval(async () => {
-    let currentActivity = botActivities[Math.floor(Math.random() * botActivities.length)];
-    console.log("Changing activity to: " + currentActivity);
-    client.user.setPresence({
-        "activity": {
-            "name": currentActivity,
-            "type": "PLAYING"
-        }
-    });
-}, activityChangeIntervalMins * 60 * 1000);
+if (botActivities.length >= 2) {
+    let activityChangeIntervalMins = 10;
+    client.setInterval(async () => {
+        let currentActivity = botActivities[Math.floor(Math.random() * botActivities.length)];
+        console.log("Changing activity to: " + currentActivity);
+        client.user.setPresence({
+            "activity": {
+                "name": currentActivity,
+                "type": "PLAYING"
+            }
+        });
+    }, activityChangeIntervalMins * 60 * 1000);
+}
 
 client.on('voiceStateUpdate', async (oldState, newState) => {
 
