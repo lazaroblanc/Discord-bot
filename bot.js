@@ -154,7 +154,7 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
                 .attachFiles(attachment)
                 .setImage(`attachment://${path.basename(carousellOutputPath)}`)
                 .setColor((await (await client.guilds.fetch(oldState.guild.id)).members.fetch(client.user.id)).displayHexColor)
-                .setTitle(`:loud_sound: ${talks.get(oldState.channel.id).get('channelName')} beendet: ${botUtils.formatSeconds(talks.get(oldState.channel.id).get('duration'))}`)
+                .setTitle(`:loud_sound: ${talks.get(oldState.channel.id).get('channelName')} beendet: ${botUtils.formatSeconds(talks.get(oldState.channel.id).get('duration'))}`);
 
             await notificationChannel.send(talkEndedEmbed);
 
