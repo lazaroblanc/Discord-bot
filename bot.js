@@ -67,13 +67,21 @@ client.on('voiceStateUpdate', async (oldState, newState) => {
             talks.set(newState.channel.id, new Map());
             talks.get(newState.channel.id).set('channelId', newState.channel.id);
             talks.get(newState.channel.id).set('channelName', newState.channel.name);
-            talks.get(newState.channel.id).set('startTime', new Date());
             talks.get(newState.channel.id).set('participants', new Array());
         }
+
+        let previousParticipantCount = talks.get(newState.channel.id).get('participants').length;
 
         if (!talks.get(newState.channel.id).get('participants').includes(newState.member)) {
             console.log("Added " + newState.member.displayName + " to talk in Channel " + newState.channel.name);
             talks.get(newState.channel.id).get('participants').push(newState.member);
+        }
+
+        if (
+            previousParticipantCount == 1
+            && talks.get(newState.channel.id).get('participants').length == 2
+        ) {
+            talks.get(newState.channel.id).set('startTime', new Date());
         }
 
     }
