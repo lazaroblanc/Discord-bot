@@ -8,8 +8,6 @@ const canvas = require('canvas');
 const botConfig = require(`${__dirname}/config/config.json`);
 const botActivities = fs.readFileSync(`${__dirname}/config/activities`, { encoding: "utf8" }).split("\n");
 const botUtils = require(`${__dirname}/modules/botUtils.js`);
-const EventEmitter = require('events');
-const botEvents = new EventEmitter();
 const talks = new Map();
 let notificationChannel;
 
