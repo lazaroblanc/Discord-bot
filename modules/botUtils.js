@@ -15,7 +15,7 @@ module.exports.formatSeconds = seconds => {
     days < 1 && seconds >= 60 && output.push(`${minutes} Min.`);
     minutes < 1 && output.push(`${_seconds} Sek.`);
     return output.join(' ');
-}
+};
 
 module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
     return new Promise(resolve => {
@@ -25,4 +25,4 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
             file.on('close', resolve);
         });
     });
-}
+};
