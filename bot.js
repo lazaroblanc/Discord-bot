@@ -24,8 +24,8 @@ const client = new discord.Client({
 });
 
 client.login(botConfig.token);
-client.on('ready', async () => { console.log("Bot is ready!"); });
 client.on('ready', async () => {
+    console.log("Bot is ready!");
     notificationChannel = await client.channels.fetch(botConfig.talkNotificationChannelId);
 });
 
