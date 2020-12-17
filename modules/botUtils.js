@@ -1,7 +1,7 @@
-const fs = require('fs');
-const https = require('https');
+const fs = require("fs");
+const https = require("https");
 
-// Takes in seconds and outputs a string like '23 Std. 50 Min. 10 Sek.'
+// Takes in seconds and outputs a string like "23 Std. 50 Min. 10 Sek."
 module.exports.formatSeconds = seconds => {
     let totalseconds = parseInt(seconds, 10); // don't forget the second param (base 10)
     let days = Math.floor(totalseconds / 86400);
@@ -14,7 +14,7 @@ module.exports.formatSeconds = seconds => {
     hours > 0 && output.push(`${hours} Std.`);
     days < 1 && seconds >= 60 && output.push(`${minutes} Min.`);
     minutes < 1 && output.push(`${_seconds} Sek.`);
-    return output.join(' ');
+    return output.join(" ");
 };
 
 module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
@@ -22,7 +22,7 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
         let file = fs.createWriteStream(destination);
         https.get(url, response => {
             response.pipe(file);
-            file.on('close', resolve);
+            file.on("close", resolve);
         });
     });
 };
