@@ -38,7 +38,7 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
 
 module.exports.logChannelMembersToConsole = members => {
     members.each(member => {
-        console.log("  - " + member.displayName + " (" + member.id + ")");
+        console.log("- " + member.displayName + " (" + member.id + ")");
     });
 };
 
