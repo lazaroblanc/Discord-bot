@@ -1,6 +1,6 @@
 {
   "name": "discord-bot",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "",
   "main": "bot.js",
   "scripts": {
@@ -9,7 +9,6 @@
   "author": "Lázaro Blanc",
   "license": "",
   "dependencies": {
-    "axios": "^0.21.0",
     "canvas": "^2.6.1",
     "discord.js": "^12.5.1",
     "webp-converter": "^2.3.1"

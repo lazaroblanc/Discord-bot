@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const webp = require("webp-converter");
-const axios = require("axios");
+const https = require("https");
 const canvas = require("canvas");
 
 // Takes in seconds and outputs a string like "23 Std. 50 Min. 10 Sek."
@@ -23,16 +23,13 @@ module.exports.formatSeconds = seconds => {
 module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
     console.log("Download of " + destination + " started");
 
-    const response = await axios({
-        method: "GET",
-        url: url,
-        responseType: "stream"
+    let file = fs.createWriteStream(destination);
+    https.get(url, response => {
+        response.pipe(file);
     });
 
-    response.data.pipe(fs.createWriteStream(destination));
-
     return new Promise(resolve => {
-        response.data.on("end", () => {
+        file.on("close", () => {
             console.log("Download of " + destination + " finished");
             resolve(destination);
         });
