@@ -1,18 +1,20 @@
 console.log("Bot is starting up...");
 
-const fs = require('fs');
-const webp = require('webp-converter');
+const fs = require("fs");
 const path = require("path");
-const canvas = require('canvas');
+const events = require("events");
+
+const discord = require("discord.js");
 
 const botConfig = require(`${__dirname}/config/config.json`);
 const botActivities = fs.readFileSync(`${__dirname}/config/activities`, { encoding: "utf8" }).split("\n");
 const botUtils = require(`${__dirname}/modules/botUtils.js`);
-const talks = new Map();
+const botEvents = new events.EventEmitter();
+const talks = new discord.Collection();
 let notificationChannel;
+let clientUser;
 
 // Create Client for Bot and login
-const discord = require('discord.js');
 const client = new discord.Client({
     "presence": {
         "status": "online",
@@ -24,9 +26,10 @@ const client = new discord.Client({
 });
 
 client.login(botConfig.token);
-client.on('ready', async () => {
+client.on("ready", async () => {
     console.log("Bot is ready!");
     notificationChannel = await client.channels.fetch(botConfig.talkNotificationChannelId);
+    clientUser = await (await client.guilds.fetch(notificationChannel.guild.id)).members.fetch(client.user.id);
 });
 
 // Handle process termination
@@ -55,124 +58,138 @@ if (botActivities.length >= 2) {
     }, activityChangeIntervalMins * 60 * 1000);
 }
 
-client.on('voiceStateUpdate', async (oldState, newState) => {
-
+client.on("voiceStateUpdate", async (oldState, newState) => {
+    // Ignore Voice State changes from Bots for now
     if (newState.member.user.bot) return;
-    if (oldState.channel == newState.channel) return;
 
-    if (newState.channel) {
-
-        if (!talks.has(newState.channel.id)) {
-            console.log("Talk started in Channel: " + newState.channel.name);
-            talks.set(newState.channel.id, new Map());
-            talks.get(newState.channel.id).set('channelId', newState.channel.id);
-            talks.get(newState.channel.id).set('channelName', newState.channel.name);
-            talks.get(newState.channel.id).set('participants', new Array());
-        }
-
-        let previousParticipantCount = talks.get(newState.channel.id).get('participants').length;
-
-        if (!talks.get(newState.channel.id).get('participants').includes(newState.member)) {
-            console.log("Added " + newState.member.displayName + " to talk in Channel " + newState.channel.name);
-            talks.get(newState.channel.id).get('participants').push(newState.member);
-        }
-
-        if (
-            previousParticipantCount == 1
-            && talks.get(newState.channel.id).get('participants').length == 2
-        ) {
-            talks.get(newState.channel.id).set('startTime', new Date());
-        }
-
+    // Connected
+    if (!oldState.channel) {
+        botEvents.emit("memberJoinedVoiceChannel", newState.member, newState.channel)
     }
 
-    if (oldState.channel) {
-
-        if (!talks.has(oldState.channel.id)) return;
-
-        if (
-            talks.get(oldState.channel.id).get('participants').length >= 2
-            && oldState.channel.members.filter(m => m.user.bot == false).size == 0
-        ) {
-            // Talk finished
-
-            talks.get(oldState.channel.id).set('endTime', new Date());
-            talks.get(oldState.channel.id).set('duration', ((talks.get(oldState.channel.id).get('endTime') - talks.get(oldState.channel.id).get('startTime')) / 1000));
-
-            // Create talk carousell graphic
-            const height = 32;
-            const avatarPadding = 5;
-            const leftPadding = 0;
-            const rightPadding = 1;
-            const width = talks.get(oldState.channel.id).get('participants').length * (height + avatarPadding) - avatarPadding + leftPadding + rightPadding;
-
-            const image = canvas.createCanvas(width, height);
-            const context = image.getContext('2d');
-
-            // Draw avatar circles on carousell image for all participants of the talk
-            let i = width - height - rightPadding;
-            for (let member of talks.get(oldState.channel.id).get('participants')) {
-                await Promise.resolve(new Promise(async (resolve, reject) => {
-
-                    // Download avatar
-                    // Convert avatar webp to jpeg
-                    let avatarURL = member.user.displayAvatarURL()
-                    console.log(">>>> " + member.user.username + "'s Avatar URL: " + avatarURL);
-
-                    let avatarnameOriginal = path.basename(avatarURL);
-                    let avatarnamePNG = avatarnameOriginal.endsWith(".webp") ? avatarnameOriginal.replace("\.webp", ".png") : avatarnameOriginal;
-
-                    await botUtils.asyncHttpsDownloadToFile(avatarURL, avatarnameOriginal);
-
-                    if (avatarnameOriginal.endsWith(".webp")) {
-                        await webp.dwebp(avatarnameOriginal, avatarnamePNG, "-o");
-                        console.log("Avatar converted from webp");
-                    }
-
-                    await canvas.loadImage(avatarnamePNG).then(image => {
-                        console.log("Drawing avatar to image");
-                        context.save();
-                        context.beginPath();
-                        context.arc(i + height / 2, height / 2, height / 2, 0, 2 * Math.PI)
-                        context.closePath();
-                        context.clip();
-                        context.drawImage(image, i, 0, height, height);
-                        context.restore();
-                        i -= height + avatarPadding;
-
-                        console.log("Cleaning-up avatar file");
-                        fs.unlinkSync(avatarnameOriginal);
-                        if (avatarnamePNG != avatarnameOriginal) {
-                            fs.unlinkSync(avatarnamePNG);
-                        }
-
-                        resolve();
-                    })
-                })) // END OF AVATAR PROMISE
-            } // END OF PARTICIPANTS LOOP
-
-            // Write carousell image to disk
-            carousellOutputPath = `${__dirname}/carousell.png`;
-            const buffer = image.toBuffer('image/png')
-            fs.writeFileSync(carousellOutputPath, buffer);
-
-            // Create embed
-            const attachment = new discord.MessageAttachment(carousellOutputPath, path.basename(carousellOutputPath));
-            let talkEndedEmbed = new discord.MessageEmbed()
-                .attachFiles(attachment)
-                .setImage(`attachment://${path.basename(carousellOutputPath)}`)
-                .setColor((await (await client.guilds.fetch(oldState.guild.id)).members.fetch(client.user.id)).displayHexColor)
-                .setTitle(`:loud_sound: ${talks.get(oldState.channel.id).get('channelName')} beendet: ${botUtils.formatSeconds(talks.get(oldState.channel.id).get('duration'))}`);
-
-            await notificationChannel.send(talkEndedEmbed);
-
-            talks.delete(oldState.channel.id);
-
-            console.log("Cleaning-up files");
-            fs.unlinkSync("carousell.png");
-            console.log("Finished cleaning up files");
-        }
-
+    // Disconnected
+    if (!newState.channel) {
+        botEvents.emit("memberLeftVoiceChannel", newState.member, oldState.channel)
     }
 
+    // Switched channels
+    if (newState.channel && oldState.channel && newState.channel != oldState.channel) {
+        botEvents.emit("memberLeftVoiceChannel", newState.member, oldState.channel)
+        botEvents.emit("memberJoinedVoiceChannel", newState.member, newState.channel)
+    }
+});
+
+botEvents.on("memberJoinedVoiceChannel", (member, channel) => {
+    console.log(member.displayName + " connected to channel " + channel.name + " (" + channel.id + ")");
+    botUtils.logChannelMembersToConsole(channel.members);
+
+    if (channel.members.filter(member => member.user.bot == false).size == 1) {
+        botEvents.emit("talkCreated", member, channel);
+    }
+    else if (channel.members.filter(member => member.user.bot == false).size == 2) {
+        botEvents.emit("talkStarted", member, channel);
+    }
+    else {
+        botEvents.emit("talkJoined", member, channel);
+    }
+});
+
+botEvents.on("memberLeftVoiceChannel", (member, channel) => {
+    console.log(member.displayName + " disconnected from channel " + channel.name + " (" + channel.id + ")");
+    botUtils.logChannelMembersToConsole(channel.members);
+
+    if (channel.members.filter(member => member.user.bot == false).size == 0) {
+        botEvents.emit("talkDeleted", channel);
+    }
+    else if (channel.members.filter(member => member.user.bot == false).size == 1) {
+        botEvents.emit("talkEnded", channel);
+    }
+    else {
+        botEvents.emit("talkLeft", member, channel);
+    }
+});
+
+botEvents.on("talkCreated", (member, channel) => {
+    talks.set(channel.id, new Map());
+    talks.get(channel.id).set("channel", channel);
+    talks.get(channel.id).set("start", null);
+    talks.get(channel.id).set("end", null);
+    talks.get(channel.id).set("duration", null);
+    talks.get(channel.id).set("participants", new discord.Collection());
+    talks.get(channel.id).get("participants").set(member.id, member)
+
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " created by " + member.displayName);
+});
+
+botEvents.on("talkStarted", (member, channel) => {
+    if (!talks.has(channel.id)) {
+        botEvents.emit(
+            "talkCreated",
+            channel.members
+                .filter(member => member.user.bot == false)
+                .filter(m => m != member)
+                .first(1)[0],
+            channel
+        );
+    }
+
+    talks.get(channel.id).get("participants").set(member.id, member);
+    talks.get(channel.id).set("start", new Date());
+
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " started by " + member.displayName);
+});
+
+botEvents.on("talkJoined", (member, channel) => {
+    if (!talks.get(channel.id).get("participants").has(member)) {
+        talks.get(channel.id).get("participants").set(member.id, member);
+    }
+
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " joined by " + member.displayName);
+});
+
+botEvents.on("talkDeleted", (channel) => {
+    talks.delete(channel.id);
+
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " deleted");
+});
+
+botEvents.on("talkEnded", async (channel) => {
+
+    if (!talks.has(channel.id)) {
+        console.log("No talk found for channel " + channel.id);
+        return;
+    }
+
+    talks.get(channel.id).set("end", new Date());
+    talks.get(channel.id).set("duration", (talks.get(channel.id).get("end") - talks.get(channel.id).get("start")) / 1000);
+
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " ended with " + talks.get(channel.id).get("participants").size + " participants");
+
+    let avatarFilenames = await Promise.all(botUtils.downloadParticipantsAvatars(talks.get(channel.id).get("participants")));
+    let avatarsToConvert = avatarFilenames.filter(filename => filename.endsWith(".webp"));
+    await Promise.all(botUtils.convertParticipantsWebpAvatarsToPng(avatarsToConvert));
+    botUtils.convertWebpAvatarFilenamesToPng(avatarFilenames);
+    let = carousellOutputFile = path.join(__dirname, "carousell.png");
+    await botUtils.createCarousellImage(talks.get(channel.id).get("participants"), avatarFilenames, carousellOutputFile);
+
+    // Create embed
+    console.log("Creating talk ended embed");
+    const attachment = new discord.MessageAttachment(carousellOutputFile, path.basename(carousellOutputFile));
+    let talkEndedEmbed = new discord.MessageEmbed()
+        .attachFiles(attachment)
+        .setImage(`attachment://${path.basename(carousellOutputFile)}`)
+        .setColor(clientUser.displayHexColor)
+        .setTitle(`:loud_sound: ${talks.get(channel.id).get("channel").name} beendet: ${botUtils.formatSeconds(talks.get(channel.id).get("duration"))}`)
+        .setDescription(talks.get(channel.id).get("participants").array().reverse().join("\n"))
+
+    console.log("Posting talk ended embed");
+    await notificationChannel.send(talkEndedEmbed);
+
+    botUtils.cleanupCarousselTempfiles(avatarsToConvert, avatarFilenames, carousellOutputFile);
+    talks.delete(channel.id);
+    botEvents.emit("talkCreated", channel.members.filter(member => member.user.bot == false).first(1)[0], channel);
+});
+
+botEvents.on("talkLeft", (member, channel) => {
+    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " left by " + member.displayName);
 });
