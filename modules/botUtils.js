@@ -21,7 +21,7 @@ module.exports.formatSeconds = seconds => {
 };
 
 module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
-    // console.log("Download of " + destination + " started");
+    console.log("Download of " + destination + " started");
 
     const response = await axios({
         method: "GET",
@@ -33,7 +33,7 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
 
     return new Promise(resolve => {
         response.data.on("end", () => {
-            // console.log("Download of " + destination + " finished");
+            console.log("Download of " + destination + " finished");
             resolve(destination);
         });
     });
