@@ -80,14 +80,12 @@ module.exports.convertWebpAvatarFilenamesToPng = avatarFilenames => {
 module.exports.createCarousellImage = async (participants, avatarFilenames, carousellOutputFile) => {
     const height = 32;
     const avatarPadding = 5;
-    const leftPadding = 0;
-    const rightPadding = 1;
-    const width = participants.size * (height + avatarPadding) - avatarPadding + leftPadding + rightPadding;
+    const width = participants.size * (height + avatarPadding) - avatarPadding;
 
     const image = canvas.createCanvas(width, height);
     const context = image.getContext("2d");
 
-    let i = width - height - rightPadding;
+    let i = 0;
     await participants.forEach(async participant => {
         let avatarUrl = participant.user.displayAvatarURL();
         let avatarFilename = path.basename(avatarUrl);
@@ -104,7 +102,7 @@ module.exports.createCarousellImage = async (participants, avatarFilenames, caro
         console.log("Drawing avatar for " + participant.displayName + " to carousell image");
         context.drawImage(image, i, 0, height, height);
         context.restore();
-        i -= height + avatarPadding;
+        i += height + avatarPadding;
     });
 
     console.log("Writing carousell image to disk");
