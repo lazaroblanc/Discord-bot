@@ -27,7 +27,13 @@ const client = new discord.Client({
 
 client.login(botConfig.token);
 client.on("ready", async () => {
-    console.log("Bot is ready!");
+
+    console.log(`Bot is ready as ${client.user.tag} runnning on guilds:`);
+    client.guilds.cache
+        .forEach(async guild => {
+            let guildUser = await (await client.guilds.fetch(guild.id)).members.fetch(client.user.id);
+            console.log(`- ${guild.name} (${guild.id}) as ${guildUser.displayName}`);
+        });
     notificationChannel = await client.channels.fetch(botConfig.talkNotificationChannelId);
     clientUser = await (await client.guilds.fetch(notificationChannel.guild.id)).members.fetch(client.user.id);
 });
