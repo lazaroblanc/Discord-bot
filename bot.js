@@ -1,8 +1,8 @@
-console.log("Bot is starting up...");
-
 const fs = require("fs");
 const path = require("path");
 const events = require("events");
+var pjson = require('./package.json');
+console.log("Discord bot v" + pjson.version);
 
 const discord = require("discord.js");
 
