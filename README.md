@@ -5,23 +5,23 @@
 <span>A Discord bot made using <a href="https://github.com/discordjs/discord.js">discord.js</a></span><br /><br />
 
 <a href="./package.json">
-    <img src="https://img.shields.io/github/package-json/v/lazaroblanc/discord-bot">
+<img src="https://img.shields.io/github/package-json/v/lazaroblanc/discord-bot?style=flat">
 </a>
 
-<img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/lazaroblanc/discord-bot">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues-raw/lazaroblanc/discord-bot?style=flat">
 
-<img alt="GitHub issues" src="https://img.shields.io/github/issues-closed/lazaroblanc/discord-bot">
+<img alt="GitHub issues" src="https://img.shields.io/github/issues-closed/lazaroblanc/discord-bot?style=flat">
+
+<a href="https://github.com/lazaroblanc/discord-bot/commits/master">
+<img src="https://img.shields.io/github/commit-activity/m/lazaroblanc/discord-bot?style=flat">
+</a>
 
 <a href="https://david-dm.org/lazaroblanc/discord-bot">
-    <img src="https://img.shields.io/david/lazaroblanc/discord-bot?style=flat">
+<img src="https://img.shields.io/david/lazaroblanc/discord-bot?style=flat">
 </a>
 
 <a href="https://sonarcloud.io/dashboard?id=lazaroblanc_discord-bot">
-    <img src="https://sonarcloud.io/api/project_badges/measure?project=lazaroblanc_discord-bot&metric=alert_status">
-</a>
-
-<a href="https://github.com/lazaroblanc/discord-bot/commits/master">
-    <img src="https://img.shields.io/github/commit-activity/m/lazaroblanc/discord-bot?style=flat">
+<img alt="Sonar Quality Gate" src="https://img.shields.io/sonar/alert_status/lazaroblanc_discord-bot?logo=sonarcloud&server=https%3A%2F%2Fsonarcloud.io&style=flat">
 </a>
 
 </div>
