@@ -20,7 +20,7 @@ module.exports.formatSeconds = totalseconds => {
 };
 
 module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
-    console.log("Download of " + destination + " started");
+    console.log(`Download of ${destination} started`);
 
     let file = fs.createWriteStream(destination);
     https.get(url, response => {
@@ -29,7 +29,7 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
 
     return new Promise(resolve => {
         file.on("close", () => {
-            console.log("Download of " + destination + " finished");
+            console.log(`Download of ${destination} finished`);
             resolve(destination);
         });
     });
@@ -37,7 +37,7 @@ module.exports.asyncHttpsDownloadToFile = async (url, destination) => {
 
 module.exports.logChannelMembersToConsole = members => {
     members.each(member => {
-        console.log("- " + member.displayName + " (" + member.id + ")");
+        console.log(`- ${member.displayName} (${member.id})`);
     });
 };
 
@@ -95,7 +95,7 @@ module.exports.createCarousellImage = async (participants, avatarFilenames, caro
         context.arc(i + height / 2, height / 2, height / 2, 0, 2 * Math.PI)
         context.closePath();
         context.clip();
-        console.log("Drawing avatar for " + participant.displayName + " to carousell image");
+        console.log(`Drawing avatar for ${participant.displayName} to carousell image`);
         context.drawImage(avatarImage, i, 0, height, height);
         context.restore();
         i += height + avatarPadding;

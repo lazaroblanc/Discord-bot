@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const events = require("events");
 const pjson = require('./package.json');
-console.log("Discord bot v" + pjson.version);
+console.log(`Discord bot v${pjson.version}`);
 
 const discord = require("discord.js");
 
@@ -42,7 +42,7 @@ client.on("ready", async () => {
 let signals = ["SIGINT", "SIGHUP", "SIGTERM"];
 for (let signal of signals) {
     process.on(signal, () => {
-        console.log(signal + " received");
+        console.log(`${signal} received`);
         console.log("Shutting down ...");
         client.destroy();
         process.exit(0);
@@ -54,7 +54,7 @@ if (botActivities.length >= 2) {
     let activityChangeIntervalMins = 10;
     client.setInterval(async () => {
         let currentActivity = botActivities[Math.floor(Math.random() * botActivities.length)];
-        console.log("Changing activity to: " + currentActivity);
+        console.log(`Changing activity to: ${currentActivity}`);
         client.user.setPresence({
             "activity": {
                 "name": currentActivity,
@@ -86,7 +86,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 });
 
 botEvents.on("memberJoinedVoiceChannel", (member, channel) => {
-    console.log(member.displayName + " connected to channel " + channel.name + " (" + channel.id + ")");
+    console.log(`${member.displayName} connected to channel ${channel.name} (${channel.id})`);
     botUtils.logChannelMembersToConsole(channel.members);
 
     if (channel.members.filter(m => m.user.bot == false).size == 1) {
@@ -101,7 +101,7 @@ botEvents.on("memberJoinedVoiceChannel", (member, channel) => {
 });
 
 botEvents.on("memberLeftVoiceChannel", (member, channel) => {
-    console.log(member.displayName + " disconnected from channel " + channel.name + " (" + channel.id + ")");
+    console.log(`${member.displayName} disconnected from channel ${channel.name} (${channel.id})`);
     botUtils.logChannelMembersToConsole(channel.members);
 
     if (channel.members.filter(m => m.user.bot == false).size == 0) {
@@ -124,7 +124,7 @@ botEvents.on("talkCreated", (member, channel) => {
     talks.get(channel.id).set("participants", new discord.Collection());
     talks.get(channel.id).get("participants").set(member.id, member)
 
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " created by " + member.displayName);
+    console.log(`Talk in channel ${channel.name} (${channel.id}) created by ${member.displayName}`);
 });
 
 botEvents.on("talkStarted", (member, channel) => {
@@ -142,7 +142,7 @@ botEvents.on("talkStarted", (member, channel) => {
     talks.get(channel.id).get("participants").set(member.id, member);
     talks.get(channel.id).set("start", new Date());
 
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " started by " + member.displayName);
+    console.log(`Talk in channel ${channel.name} (${channel.id}) started by ${member.displayName}`);
 });
 
 botEvents.on("talkJoined", (member, channel) => {
@@ -150,26 +150,26 @@ botEvents.on("talkJoined", (member, channel) => {
         talks.get(channel.id).get("participants").set(member.id, member);
     }
 
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " joined by " + member.displayName);
+    console.log(`Talk in channel ${channel.name} (${channel.id}) joined by ${member.displayName}`);
 });
 
 botEvents.on("talkDeleted", (channel) => {
     talks.delete(channel.id);
 
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " deleted");
+    console.log(`Talk in channel ${channel.name} (${channel.id}) deleted`);
 });
 
 botEvents.on("talkEnded", async (channel) => {
 
     if (!talks.has(channel.id)) {
-        console.log("No talk found for channel " + channel.id);
+        console.log(`No talk found for channel ${channel.id}`);
         return;
     }
 
     talks.get(channel.id).set("end", new Date());
     talks.get(channel.id).set("duration", (talks.get(channel.id).get("end") - talks.get(channel.id).get("start")) / 1000);
 
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " ended with " + talks.get(channel.id).get("participants").size + " participants");
+    console.log(`Talk in channel ${channel.name} (${channel.id}) ended with ${talks.get(channel.id).get("participants").size} participants`);
 
     let avatarFilenames = await Promise.all(botUtils.downloadParticipantsAvatars(talks.get(channel.id).get("participants")));
     let avatarsToConvert = avatarFilenames.filter(filename => filename.endsWith(".webp"));
@@ -197,5 +197,5 @@ botEvents.on("talkEnded", async (channel) => {
 });
 
 botEvents.on("talkLeft", (member, channel) => {
-    console.log("Talk in channel " + channel.name + " (" + channel.id + ")" + " left by " + member.displayName);
+    console.log(`Talk in channel ${channel.name} (${channel.id}) left by ${member.displayName}`);
 });
