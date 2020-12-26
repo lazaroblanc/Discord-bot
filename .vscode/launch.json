@@ -6,11 +6,12 @@
     "configurations": [{
         "type": "node",
         "request": "launch",
-        "name": "Launch Program",
+        "name": "nodemon",
         "skipFiles": [
             "<node_internals>/**"
         ],
-        "program": "${workspaceFolder}\\bot.js",
-        "console": "externalTerminal"
+        "console": "externalTerminal",
+        "runtimeExecutable": "nodemon",
+        "program": "${workspaceFolder}\\bot.js"
     }]
 }

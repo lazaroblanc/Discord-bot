@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const events = require("events");
-var pjson = require('./package.json');
+const pjson = require('./package.json');
 console.log("Discord bot v" + pjson.version);
 
 const discord = require("discord.js");
@@ -28,7 +28,7 @@ const client = new discord.Client({
 client.login(botConfig.token);
 client.on("ready", async () => {
 
-    console.log(`Bot is ready as ${client.user.tag} runnning on guilds:`);
+    console.log(`Ready as ${client.user.tag} runnning on guilds:`);
     client.guilds.cache
         .forEach(async guild => {
             let guildUser = await (await client.guilds.fetch(guild.id)).members.fetch(client.user.id);
