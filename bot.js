@@ -7,8 +7,8 @@ console.log(`Discord bot v${pjson.version}`);
 const discord = require("discord.js");
 
 const botConfig = require(`${__dirname}/config/config.json`);
-const botActivities = fs.readFileSync(`${__dirname}/config/activities`, { encoding: "utf8" }).split("\n");
 const botUtils = require(`${__dirname}/modules/botUtils.js`);
+const botActivities = botUtils.loadActivitiesFromFile(`${__dirname}/config/activities`);
 const botEvents = new events.EventEmitter();
 const talks = new discord.Collection();
 let notificationChannel;

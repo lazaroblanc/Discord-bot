@@ -4,6 +4,14 @@ const webp = require("webp-converter");
 const https = require("https");
 const canvas = require("canvas");
 
+module.exports.loadActivitiesFromFile = path => {
+    if (!fs.existsSync(path)) {
+        console.log("No activities file found. Creating an empty one.");
+        fs.closeSync(fs.openSync(path, "as+"));
+    }
+    return fs.readFileSync(path, { encoding: "utf8" }).split("\n");
+};
+
 // Takes in seconds and outputs a string like "23 Std. 50 Min."
 module.exports.formatSeconds = totalseconds => {
     let days = Math.floor(totalseconds / 86400);
