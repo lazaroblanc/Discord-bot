@@ -175,7 +175,7 @@ botEvents.on("talkEnded", async (channel) => {
     let avatarsToConvert = avatarFilenames.filter(filename => filename.endsWith(".webp"));
     await Promise.all(botUtils.convertParticipantsWebpAvatarsToPng(avatarsToConvert));
     botUtils.convertWebpAvatarFilenamesToPng(avatarFilenames);
-    let = carousellOutputFile = path.join(__dirname, "carousell.png");
+    let carousellOutputFile = path.join(__dirname, "carousell.png");
     await botUtils.createCarousellImage(talks.get(channel.id).get("participants"), avatarFilenames, carousellOutputFile);
 
     // Create embed
