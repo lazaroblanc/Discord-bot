@@ -89,10 +89,10 @@ botEvents.on("memberJoinedVoiceChannel", (member, channel) => {
     console.log(member.displayName + " connected to channel " + channel.name + " (" + channel.id + ")");
     botUtils.logChannelMembersToConsole(channel.members);
 
-    if (channel.members.filter(member => member.user.bot == false).size == 1) {
+    if (channel.members.filter(m => m.user.bot == false).size == 1) {
         botEvents.emit("talkCreated", member, channel);
     }
-    else if (channel.members.filter(member => member.user.bot == false).size == 2) {
+    else if (channel.members.filter(m => m.user.bot == false).size == 2) {
         botEvents.emit("talkStarted", member, channel);
     }
     else {
@@ -104,10 +104,10 @@ botEvents.on("memberLeftVoiceChannel", (member, channel) => {
     console.log(member.displayName + " disconnected from channel " + channel.name + " (" + channel.id + ")");
     botUtils.logChannelMembersToConsole(channel.members);
 
-    if (channel.members.filter(member => member.user.bot == false).size == 0) {
+    if (channel.members.filter(m => m.user.bot == false).size == 0) {
         botEvents.emit("talkDeleted", channel);
     }
-    else if (channel.members.filter(member => member.user.bot == false).size == 1) {
+    else if (channel.members.filter(m => m.user.bot == false).size == 1) {
         botEvents.emit("talkEnded", channel);
     }
     else {
@@ -132,7 +132,7 @@ botEvents.on("talkStarted", (member, channel) => {
         botEvents.emit(
             "talkCreated",
             channel.members
-                .filter(member => member.user.bot == false)
+                .filter(m => m.user.bot == false)
                 .filter(m => m != member)
                 .first(1)[0],
             channel

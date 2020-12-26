@@ -87,7 +87,7 @@ module.exports.createCarousellImage = async (participants, avatarFilenames, caro
         let avatarUrl = participant.user.displayAvatarURL();
         let avatarFilename = path.basename(avatarUrl);
         let avatarFilenamePng = avatarFilename.replace("\.webp", ".png");
-        let image = await canvas.loadImage(
+        let avatarImage = await canvas.loadImage(
             path.join(__dirname, "..", avatarFilenames[avatarFilenames.indexOf(avatarFilenamePng)])
         );
 
@@ -97,7 +97,7 @@ module.exports.createCarousellImage = async (participants, avatarFilenames, caro
         context.closePath();
         context.clip();
         console.log("Drawing avatar for " + participant.displayName + " to carousell image");
-        context.drawImage(image, i, 0, height, height);
+        context.drawImage(avatarImage, i, 0, height, height);
         context.restore();
         i += height + avatarPadding;
     });
