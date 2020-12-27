@@ -186,7 +186,7 @@ botEvents.on("talkEnded", async (channel) => {
         .setImage(`attachment://${path.basename(carousellOutputFile)}`)
         .setColor(clientUser.displayHexColor)
         .setTitle(`:loud_sound: ${talks.get(channel.id).get("channel").name} beendet: ${botUtils.formatSeconds(talks.get(channel.id).get("duration"))}`)
-        .setDescription(talks.get(channel.id).get("participants").array().join(" "))
+        .setDescription(talks.get(channel.id).get("participants").array().join(" "));
 
     console.log("Posting talk ended embed");
     await notificationChannel.send(talkEndedEmbed);
