@@ -9,6 +9,7 @@
 <a href="https://github.com/lazaroblanc/discord-bot/commits/master"><img src="https://img.shields.io/github/commit-activity/m/lazaroblanc/discord-bot?style=flat"></a>
 <a href="https://david-dm.org/lazaroblanc/discord-bot"><img src="https://img.shields.io/david/lazaroblanc/discord-bot?style=flat"></a>
 <a href="https://sonarcloud.io/dashboard?id=lazaroblanc_discord-bot"><img alt="Sonar Quality Gate" src="https://img.shields.io/sonar/alert_status/lazaroblanc_discord-bot?logo=sonarcloud&server=https%3A%2F%2Fsonarcloud.io&style=flat"></a>
+<a href="https://app.fossa.com/projects/git%2Bgithub.com%2Flazaroblanc%2Fdiscord-bot?ref=badge_shield" alt="FOSSA Status"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Flazaroblanc%2Fdiscord-bot.svg?type=shield"/></a>
 
 </div>
 
@@ -69,3 +70,6 @@ It posts a message whenever a conversation in a voice channel ended <a href="htt
 - Allow users to add/remove themselves from roles via reactions
 - Allow users to give themselves a custom role to set a custom color for their name
 - Rotating server icon
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Flazaroblanc%2Fdiscord-bot.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Flazaroblanc%2Fdiscord-bot?ref=badge_large)
